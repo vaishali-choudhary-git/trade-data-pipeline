@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: trades_valid
+    description: "Valid and expired trades that passed all business rules"
+    columns:
+      - name: trade_id
+        tests:
+          - not_null
+      - name: version
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['ACTIVE', 'EXPIRED']
+
+  - name: trades_rejected
+    description: "Rejected trades for compliance audit"
+    columns:
+      - name: trade_id
+        tests:
+          - not_null
+      - name: rejection_reason
+        tests:
+          - not_null

@@ -1,0 +1,28 @@
+sources:
+  - name: raw
+    database: TRADE_DB
+    schema: RAW
+    tables:
+      - name: TRADES_RAW
+        description: "Raw trades ingested from Snowpipe"
+        columns:
+          - name: TRADE_ID
+            description: "Unique trade identifier"
+          - name: VERSION
+            description: "Trade version number"
+          - name: TRADE_DATE
+            description: "Date trade was executed"
+          - name: MATURITY_DATE
+            description: "Date trade matures"
+          - name: COUNTERPARTY
+            description: "Counterparty name"
+          - name: NOTIONAL
+            description: "Notional value of trade"
+          - name: CURRENCY
+            description: "Trade currency"
+          - name: TRADE_TYPE
+            description: "Type of trade"
+          - name: STATUS
+            description: "Trade status"
+          - name: INGESTED_AT
+            description: "Timestamp when trade was ingested"
