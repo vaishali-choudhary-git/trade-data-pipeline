@@ -49,9 +49,9 @@ def pipeline_health_check(**context):
     try:
         cur.execute("SELECT COUNT(*) FROM TRADE_DB.RAW.TRADES_RAW")
         raw_count = cur.fetchone()[0]
-        cur.execute("SELECT COUNT(*) FROM TRADE_DB.STAGING_MART.TRADES_VALID")
+        cur.execute("SELECT COUNT(*) FROM TRADE_DB.MART.TRADES_VALID")
         valid_count = cur.fetchone()[0]
-        cur.execute("SELECT COUNT(*) FROM TRADE_DB.STAGING_MART.TRADES_REJECTED")
+        cur.execute("SELECT COUNT(*) FROM TRADE_DB.MART.TRADES_REJECTED")
         rejected_count = cur.fetchone()[0]
         print(f"Raw: {raw_count} | Valid: {valid_count} | Rejected: {rejected_count}")
         context['ti'].xcom_push(key='trade_stats', value={

@@ -27,9 +27,9 @@ def run_query(sql):
 st.subheader("Pipeline Summary")
 col1, col2, col3, col4 = st.columns(4)
 raw_df      = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.RAW.TRADES_RAW")
-valid_df    = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.STAGING_MART.TRADES_VALID")
-rejected_df = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.STAGING_MART.TRADES_REJECTED")
-expired_df  = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.STAGING_MART.TRADES_VALID WHERE STATUS = 'EXPIRED'")
+valid_df    = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.MART.TRADES_VALID")
+rejected_df = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.MART.TRADES_REJECTED")
+expired_df  = run_query("SELECT COUNT(*) AS CNT FROM TRADE_DB.MART.TRADES_VALID WHERE STATUS = 'EXPIRED'")
 col1.metric("Total Ingested",  int(raw_df['CNT'][0]))
 col2.metric("Valid Trades",    int(valid_df['CNT'][0]))
 col3.metric("Rejected Trades", int(rejected_df['CNT'][0]))
@@ -42,11 +42,11 @@ with col_left:
     st.subheader("Trade Status Breakdown")
     status_df = run_query("""
         SELECT STATUS, COUNT(*) AS COUNT
-        FROM TRADE_DB.STAGING_MART.TRADES_VALID
+        FROM TRADE_DB.MART.TRADES_VALID
         GROUP BY STATUS
         UNION ALL
         SELECT 'REJECTED', COUNT(*)
-        FROM TRADE_DB.STAGING_MART.TRADES_REJECTED
+        FROM TRADE_DB.MART.TRADES_REJECTED
     """)
     fig = px.pie(status_df, values='COUNT', names='STATUS', hole=0.4,
         color_discrete_map={'ACTIVE':'#1D9E75','EXPIRED':'#BA7517','REJECTED':'#993C1D'})
@@ -57,7 +57,7 @@ with col_right:
     st.subheader("Rejection Reasons")
     reasons_df = run_query("""
         SELECT SPLIT_PART(REJECTION_REASON, ':', 1) AS RULE, COUNT(*) AS COUNT
-        FROM TRADE_DB.STAGING_MART.TRADES_REJECTED
+        FROM TRADE_DB.MART.TRADES_REJECTED
         GROUP BY 1 ORDER BY COUNT DESC
     """)
     fig2 = px.bar(reasons_df, x='COUNT', y='RULE', orientation='h',
@@ -71,7 +71,7 @@ st.subheader("Valid Trades")
 trades_df = run_query("""
     SELECT TRADE_ID, VERSION, TRADE_DATE, MATURITY_DATE,
            COUNTERPARTY, NOTIONAL, CURRENCY, TRADE_TYPE, STATUS
-    FROM TRADE_DB.STAGING_MART.TRADES_VALID
+    FROM TRADE_DB.MART.TRADES_VALID
     ORDER BY TRADE_DATE DESC LIMIT 50
 """)
 st.dataframe(trades_df, use_container_width=True)
