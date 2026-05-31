@@ -18,4 +18,4 @@ cleaned AS (
     WHERE TRADE_ID IS NOT NULL
       AND VERSION  IS NOT NULL
 )
-SELECT * FROM cleaned
+SELECT * FROM cleaned-- v1.1 | added pipeline version tag
