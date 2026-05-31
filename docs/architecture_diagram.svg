@@ -1,36 +1,69 @@
-<svg width="100%" viewBox="0 0 680 720" xmlns="http://www.w3.org/2000/svg">
-<rect x="40" y="40" width="600" height="64" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="66" text-anchor="middle" dominant-baseline="central" fill="#085041">Ingestion layer</text>
-<text font-family="sans-serif" font-size="12" x="340" y="86" text-anchor="middle" dominant-baseline="central" fill="#0F6E56">Python (Faker) → trades.csv → Snowflake COPY INTO → RAW.TRADES_RAW</text>
-<rect x="40" y="134" width="600" height="56" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="156" text-anchor="middle" dominant-baseline="central" fill="#26215C">DBT staging layer</text>
-<text font-family="sans-serif" font-size="12" x="340" y="174" text-anchor="middle" dominant-baseline="central" fill="#3C3489">stg_trades_raw — type casting, cleaning, null filtering</text>
-<rect x="40" y="220" width="600" height="100" rx="12" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="248" text-anchor="middle" dominant-baseline="central" fill="#412402">DBT intermediate layer — business rules</text>
-<text font-family="sans-serif" font-size="12" x="160" y="272" text-anchor="middle" fill="#633806">Rule 1: reject lower version</text>
-<text font-family="sans-serif" font-size="12" x="160" y="292" text-anchor="middle" fill="#633806">Rule 2: replace same version</text>
-<text font-family="sans-serif" font-size="12" x="340" y="272" text-anchor="middle" fill="#633806">Rule 3: reject past maturity</text>
-<text font-family="sans-serif" font-size="12" x="340" y="292" text-anchor="middle" fill="#633806">Rule 4: mark as expired</text>
-<text font-family="sans-serif" font-size="12" x="520" y="272" text-anchor="middle" fill="#633806">Rule 5: reject zero notional</text>
-<text font-family="sans-serif" font-size="12" x="520" y="292" text-anchor="middle" fill="#633806">Rule 6: log all rejections</text>
-<rect x="40" y="350" width="310" height="56" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="195" y="372" text-anchor="middle" dominant-baseline="central" fill="#085041">MART.TRADES_VALID</text>
-<text font-family="sans-serif" font-size="12" x="195" y="390" text-anchor="middle" dominant-baseline="central" fill="#0F6E56">Active + expired trades</text>
-<rect x="330" y="350" width="310" height="56" rx="12" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="485" y="372" text-anchor="middle" dominant-baseline="central" fill="#4A1B0C">MART.TRADES_REJECTED</text>
-<text font-family="sans-serif" font-size="12" x="485" y="390" text-anchor="middle" dominant-baseline="central" fill="#993C1D">Rejected + reason + timestamp</text>
-<rect x="40" y="452" width="600" height="64" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="474" text-anchor="middle" dominant-baseline="central" fill="#042C53">Airflow orchestration — daily 06:00 UTC</text>
-<text font-family="sans-serif" font-size="12" x="340" y="494" text-anchor="middle" dominant-baseline="central" fill="#185FA5">ingest → dbt_staging → dbt_intermediate → dbt_mart → dbt_tests → health_check → audit_log</text>
-<rect x="40" y="546" width="280" height="72" rx="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="180" y="570" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">Monitoring</text>
-<text font-family="sans-serif" font-size="12" x="180" y="590" text-anchor="middle" fill="#444441">AUDIT.PIPELINE_AUDIT_LOG</text>
-<text font-family="sans-serif" font-size="12" x="180" y="606" text-anchor="middle" fill="#444441">Snowflake account_usage views</text>
-<rect x="360" y="546" width="280" height="72" rx="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="500" y="570" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">CI / CD</text>
-<text font-family="sans-serif" font-size="12" x="500" y="590" text-anchor="middle" fill="#444441">GitHub Actions — dbt compile + test</text>
-<text font-family="sans-serif" font-size="12" x="500" y="606" text-anchor="middle" fill="#444441">on PR + deploy on merge to main</text>
-<rect x="40" y="648" width="600" height="48" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="668" text-anchor="middle" dominant-baseline="central" fill="#26215C">Terraform — infrastructure as code</text>
-<text font-family="sans-serif" font-size="12" x="340" y="686" text-anchor="middle" dominant-baseline="central" fill="#3C3489">TRADE_DB · TRADE_WH · schemas · tables · stage · roles · grants</text>
+<svg width="100%" viewBox="0 0 680 860" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="200" y="30" width="280" height="52" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="56" text-anchor="middle" fill="#085041">Python trade generator</text>
+<line x1="340" y1="82" x2="340" y2="108" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text font-family="sans-serif" font-size="11" x="356" y="98" fill="#888">trades.csv</text>
+<rect x="120" y="112" width="440" height="52" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="138" text-anchor="middle" fill="#085041">Snowflake ingestion — COPY INTO RAW.TRADES_RAW</text>
+<line x1="340" y1="164" x2="340" y2="190" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text font-family="sans-serif" font-size="11" x="356" y="180" fill="#888">raw rows</text>
+<rect x="120" y="194" width="440" height="52" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="220" text-anchor="middle" fill="#26215C">DBT staging — stg_trades_raw</text>
+<line x1="340" y1="246" x2="340" y2="272" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text font-family="sans-serif" font-size="11" x="356" y="262" fill="#888">clean rows</text>
+<rect x="40" y="276" width="600" height="136" rx="10" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="302" text-anchor="middle" fill="#412402">DBT intermediate — business rules</text>
+<rect x="60" y="318" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="144" y="332" text-anchor="middle" fill="#633806">Rule 1 — reject lower version</text>
+<rect x="256" y="318" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="340" y="332" text-anchor="middle" fill="#633806">Rule 2 — replace same version</text>
+<rect x="452" y="318" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="536" y="332" text-anchor="middle" fill="#633806">Rule 3 — reject past maturity</text>
+<rect x="60" y="358" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="144" y="372" text-anchor="middle" fill="#633806">Rule 4 — mark as expired</text>
+<rect x="256" y="358" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="340" y="372" text-anchor="middle" fill="#633806">Rule 5 — reject zero notional</text>
+<rect x="452" y="358" width="168" height="28" rx="6" fill="none" stroke="#854F0B" stroke-width="0.5" opacity="0.6"/>
+<text font-family="sans-serif" font-size="11" x="536" y="372" text-anchor="middle" fill="#633806">Rule 6 — log rejections</text>
+<line x1="200" y1="412" x2="200" y2="438" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text font-family="sans-serif" font-size="11" x="136" y="428" text-anchor="middle" fill="#888">ACTIVE/EXPIRED</text>
+<line x1="480" y1="412" x2="480" y2="438" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text font-family="sans-serif" font-size="11" x="544" y="428" text-anchor="middle" fill="#888">REJECTED</text>
+<rect x="40" y="442" width="296" height="52" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="188" y="462" text-anchor="middle" fill="#085041">MART.TRADES_VALID</text>
+<text font-family="sans-serif" font-size="12" x="188" y="482" text-anchor="middle" fill="#0F6E56">Active + expired trades</text>
+<rect x="344" y="442" width="296" height="52" rx="10" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="492" y="462" text-anchor="middle" fill="#4A1B0C">MART.TRADES_REJECTED</text>
+<text font-family="sans-serif" font-size="12" x="492" y="482" text-anchor="middle" fill="#993C1D">Rejected + reason + timestamp</text>
+<line x1="188" y1="494" x2="188" y2="524" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="492" y1="494" x2="492" y2="524" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="188" y1="524" x2="492" y2="524" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="340" y1="524" x2="340" y2="540" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="40" y="544" width="600" height="72" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="572" text-anchor="middle" fill="#042C53">Airflow orchestration — daily 06:00 UTC</text>
+<text font-family="sans-serif" font-size="12" x="340" y="592" text-anchor="middle" fill="#185FA5">ingest → dbt_staging → dbt_intermediate → dbt_mart → dbt_tests → audit_log</text>
+<line x1="200" y1="616" x2="200" y2="646" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="480" y1="616" x2="480" y2="646" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="200" y1="646" x2="480" y2="646" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="200" y1="646" x2="200" y2="662" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="480" y1="646" x2="480" y2="662" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="40" y="666" width="280" height="68" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="180" y="694" text-anchor="middle" fill="#2C2C2A">Monitoring</text>
+<text font-family="sans-serif" font-size="12" x="180" y="714" text-anchor="middle" fill="#444441">AUDIT.PIPELINE_AUDIT_LOG</text>
+<text font-family="sans-serif" font-size="12" x="180" y="728" text-anchor="middle" fill="#444441">Snowflake account_usage views</text>
+<rect x="360" y="666" width="280" height="68" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="500" y="694" text-anchor="middle" fill="#2C2C2A">CI / CD</text>
+<text font-family="sans-serif" font-size="12" x="500" y="714" text-anchor="middle" fill="#444441">GitHub Actions — dbt compile + test</text>
+<text font-family="sans-serif" font-size="12" x="500" y="728" text-anchor="middle" fill="#444441">PR check + deploy on merge to main</text>
+<line x1="180" y1="734" x2="180" y2="764" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="500" y1="734" x2="500" y2="764" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="180" y1="764" x2="500" y2="764" stroke="#888" stroke-width="0.8" opacity="0.4"/>
+<line x1="340" y1="764" x2="340" y2="780" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="40" y="784" width="600" height="52" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text font-family="sans-serif" font-size="14" font-weight="500" x="340" y="810" text-anchor="middle" fill="#26215C">Terraform — infrastructure as code</text>
 </svg>
