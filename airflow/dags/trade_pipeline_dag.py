@@ -67,14 +67,16 @@ def write_audit_log(**context):
     conn = snowflake.connector.connect(**SNOWFLAKE_CONFIG)
     cur  = conn.cursor()
     try:
+        run_id = str(uuid.uuid4())
+        rejection_json = json.dumps({"total_rejected": stats.get('rejected', 0)})
         cur.execute("""
             INSERT INTO TRADE_DB.AUDIT.PIPELINE_AUDIT_LOG
             (RUN_ID, RUN_TIMESTAMP, TRADES_INGESTED, TRADES_VALID,
              TRADES_REJECTED, TRADES_EXPIRED, REJECTION_BREAKDOWN, PIPELINE_STATUS)
-            VALUES (%s, CURRENT_TIMESTAMP(), %s, %s, %s, 0, PARSE_JSON(%s), 'SUCCESS')
-        """, (str(uuid.uuid4()), stats.get('raw',0), stats.get('valid',0),
-              stats.get('rejected',0), json.dumps({"total_rejected": stats.get('rejected',0)})))
-        print("Audit log written")
+            SELECT %s, CURRENT_TIMESTAMP(), %s, %s, %s, 0, PARSE_JSON(%s), 'SUCCESS'
+        """, (run_id, stats.get('raw', 0), stats.get('valid', 0),
+              stats.get('rejected', 0), rejection_json))
+        print(f"Audit log written - run_id: {run_id}")
     finally:
         cur.close()
         conn.close()
