@@ -9,3 +9,5 @@ __pycache__/
 .env
 .DS_Store
 **/.DS_Store
+trades.csv
+data_generator/trades.csv
