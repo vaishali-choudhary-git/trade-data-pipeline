@@ -118,6 +118,9 @@ def upload_to_snowflake(filename=OUTPUT_FILE):
         cursor.execute(f"PUT 'file://{os.path.abspath(filename)}' @TRADE_STAGE AUTO_COMPRESS=TRUE OVERWRITE=TRUE")
         print("✅ File uploaded to stage successfully")
 
+        cursor.execute("TRUNCATE TABLE TRADE_DB.RAW.TRADES_RAW")
+        print("✅ RAW table truncated")
+        
         # Load into RAW table using COPY INTO
         print("🔄 Loading data into TRADES_RAW table...")
         cursor.execute(f"""
