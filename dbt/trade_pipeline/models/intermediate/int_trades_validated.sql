@@ -30,18 +30,19 @@ validated AS (
         dbt_updated_at,
         max_version,
         CASE
-            WHEN version < max_version
-                THEN 'REJECTED'
-            WHEN notional <= 0
-                THEN 'REJECTED'
-            WHEN maturity_date < CURRENT_DATE()
-                AND maturity_date >= DATEADD(day, -30, CURRENT_DATE())
+            -- Rule 1: Reject lower version (stale amendment)
+            WHEN version < max_version THEN 'REJECTED'
+            -- Rule 2: Reject invalid notional
+            WHEN notional <= 0 THEN 'REJECTED'
+            -- Rule 3: Reject trades maturing within 30 days (won't survive settlement window)
+            WHEN maturity_date >= CURRENT_DATE()
+                AND maturity_date <= DATEADD(day, 30, CURRENT_DATE())
                 AND version = max_version
                 THEN 'REJECTED'
-            WHEN maturity_date < DATEADD(day, -30, CURRENT_DATE())
-                THEN 'EXPIRED'
-            WHEN version = max_version
-                THEN 'ACTIVE'
+            -- Rule 4: Mark as expired if maturity already passed
+            WHEN maturity_date < CURRENT_DATE() AND version = max_version THEN 'EXPIRED'
+            -- Rule 5: Valid active trade
+            WHEN version = max_version THEN 'ACTIVE'
             ELSE 'ACTIVE'
         END AS derived_status,
         CASE
