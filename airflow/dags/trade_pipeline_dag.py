@@ -86,7 +86,7 @@ with DAG(
     description="Deutsche Bank trade data pipeline",
     default_args=default_args,
     schedule="0 6 * * *",
-    start_date=datetime(2024, 1, 1),
+    start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["trade", "snowflake", "dbt"],
 ) as dag:
