@@ -82,7 +82,7 @@ airflow standalone
 | What | How |
 |------|-----|
 | Every pipeline run | Logged to `AUDIT.PIPELINE_AUDIT_LOG` with counts and status |
-| Failed Snowflake queries | Queried from `snowflake.account_usage.query_history` in health check task |
+| Failed Snowflake queries | Failed Queries can be check from `snowflake.account_usage.query_history` |
 | Task failures | Airflow `on_failure_callback` writes FAILED record to audit table |
 | Retries | 2 automatic retries with 5-minute delay on any task failure |
 
